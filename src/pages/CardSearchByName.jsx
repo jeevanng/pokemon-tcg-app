@@ -1,68 +1,66 @@
-import { useContext } from "react";
-import { useState } from "react"
-import { ApiContext } from "../context/ApiContext";
+import { useContext, useEffect, useState } from "react"
+import { ApiContext } from "../contexts/ApiContext";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import PokemonCard from "../components/PokemonCard";
 
 
 export default function CardSearchByName() {
 
-    // search results
+	// search results 
+	const [searchResults, setSearchResults] = useState([]);
 
-    const [searchResults, setSearchResults] = useState([]);
+	// api URL 
+	const {api} = useContext(ApiContext);
 
-    // API url
+	// route param for the pokemon name 
+	const {pokemonName} = useParams();
 
-    const {api} = useContext(ApiContext)
+	// api key 
+	let apiKey = process.env.REACT_APP_API_KEY;
 
-    // route param for pokemon name
+	useEffect(() => {
+		console.log("Card search component has mounted! Making a fetch request now...");
 
-    const {pokemonName} = useParams();
+		async function apiRequest(){
+			let queryParams = new URLSearchParams({
+				q: 'name:' + pokemonName
+			})
+			let response = await fetch(api + 'cards?' + queryParams, {
+				headers: {
+					'X-Api-Key': apiKey
+				}
+			});
+			
+			console.log(response);
 
-    // API key
-    // Do not commit API key to github or any public space
-    let apiKey = process.env.REACT_APP_API_KEY;
+			let responseData = await response.json();
 
-    useEffect(() => {
-        console.log("Card search component has mounted! Making a fetch request now...");
+			setSearchResults(responseData.data);
+		}
 
-        async function apiRequest(){
-            let queryParams = new URLSearchParams({
-                q: 'name:' + pokemonName
-            })
-            let response = await fetch(api + 'cards?' + queryParams, {
-                headers: {
-                    'X-Api-Key': apiKey
-                }
-            })
+		apiRequest();
 
-            let responseData = await response.json();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-            setSearchResults(responseData.data);
-        }
+	return (
+		<div>
+			<h1>Card Search</h1>
+			{searchResults.length > 0 && 
+			<div>
+				<h1>{searchResults[0].name} - {searchResults[0].id}</h1>
 
-        apiRequest();
-
-    },[]);
-
-    return(
-        <div>
-            <h1>Card Search</h1>
-            {searchResults.length > 0 && 
-            <div>
-                <h1>{searchResults[0].name} - {searchResults[0].id}</h1>
-
-                {searchResults.map(result => {
-					return <PokemonCard 
-                    key={result.id} 
-                    cardTitle={result.name} 
-                    imageUrl={result.images.small} 
-                    cardDescription={result.flavorText} />
+				{searchResults.map(result => {
+					return <PokemonCard key={result.id} 
+					cardTitle={result.name} 
+					imageUrl={result.images.small} 
+					cardDescription={result.flavorText} 
+					/>
 				})}
 
-            </div>
-            }
-        </div>
-    )
+
+			</div>
+			}
+		</div>
+	)
 }
