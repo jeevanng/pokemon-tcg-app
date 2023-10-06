@@ -1,66 +1,68 @@
-import { useContext, useEffect, useState } from "react"
-import { ApiContext } from "../contexts/ApiContext";
+import { useContext } from "react";
+import { useState } from "react"
+import { ApiContext } from "../context/ApiContext";
 import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import PokemonCard from "../components/PokemonCard";
 
 
 export default function CardSearchByName() {
 
-	// search results 
-	const [searchResults, setSearchResults] = useState([]);
+    // search results
 
-	// api URL 
-	const {api} = useContext(ApiContext);
+    const [searchResults, setSearchResults] = useState([]);
 
-	// route param for the pokemon name 
-	const {pokemonName} = useParams();
+    // API url
 
-	// api key 
-	let apiKey = process.env.REACT_APP_API_KEY;
+    const {api} = useContext(ApiContext)
 
-	useEffect(() => {
-		console.log("Card search component has mounted! Making a fetch request now...");
+    // route param for pokemon name
 
-		async function apiRequest(){
-			let queryParams = new URLSearchParams({
-				q: 'name:' + pokemonName
-			})
-			let response = await fetch(api + 'cards?' + queryParams, {
-				headers: {
-					'X-Api-Key': apiKey
-				}
-			});
-			
-			console.log(response);
+    const {pokemonName} = useParams();
 
-			let responseData = await response.json();
+    // API key
+    // Do not commit API key to github or any public space
+    let apiKey = process.env.REACT_APP_API_KEY;
 
-			setSearchResults(responseData.data);
-		}
+    useEffect(() => {
+        console.log("Card search component has mounted! Making a fetch request now...");
 
-		apiRequest();
+        async function apiRequest(){
+            let queryParams = new URLSearchParams({
+                q: 'name:' + pokemonName
+            })
+            let response = await fetch(api + 'cards?' + queryParams, {
+                headers: {
+                    'X-Api-Key': apiKey
+                }
+            })
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+            let responseData = await response.json();
 
-	return (
-		<div>
-			<h1>Card Search</h1>
-			{searchResults.length > 0 && 
-			<div>
-				<h1>{searchResults[0].name} - {searchResults[0].id}</h1>
+            setSearchResults(responseData.data);
+        }
 
-				{searchResults.map(result => {
-					return <PokemonCard key={result.id} 
-					cardTitle={result.name} 
-					imageUrl={result.images.small} 
-					cardDescription={result.flavorText} 
-					/>
+        apiRequest();
+
+    },[]);
+
+    return(
+        <div>
+            <h1>Card Search</h1>
+            {searchResults.length > 0 && 
+            <div>
+                <h1>{searchResults[0].name} - {searchResults[0].id}</h1>
+
+                {searchResults.map(result => {
+					return <PokemonCard 
+                    key={result.id} 
+                    cardTitle={result.name} 
+                    imageUrl={result.images.small} 
+                    cardDescription={result.flavorText} />
 				})}
 
-
-			</div>
-			}
-		</div>
-	)
+            </div>
+            }
+        </div>
+    )
 }
