@@ -7,6 +7,9 @@ import ApiProvider from './context/ApiContext';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CardSearchByName from './pages/CardSearchByName';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import NavSearchBar from './components/NavSearchBar';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
@@ -14,6 +17,10 @@ root.render(
     <ApiProvider>
 
     <BrowserRouter>
+
+    {/* Content shown on ALL routes goes here */}
+    <NavSearchBar />
+
         <Routes>
           
           {/* Home Page Route */}

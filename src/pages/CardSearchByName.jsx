@@ -60,10 +60,10 @@ export default function CardSearchByName() {
                 {/* container here with rows and columns */}
                 {/* put card in columns and let them responsively organise themselves */}
 
-                <Container fluid style={{padding: "5%"}}>
+                <Container fluid className="mx-auto" style={{padding: "5%"}}>
 					<Row style={{display: 'flex', flexWrap:'wrap'}}>
 						{searchResults.map(result => {
-							return <Col md>
+							return <Col className="my-2">
 							<PokemonCard key={result.id} 
 								cardTitle={result.name} 
 								imageUrl={result.images.small} 
