@@ -43,7 +43,8 @@ export default function CardSearchByName() {
         }
 
         apiRequest();
-
+        
+    // eslint-disable-next-line
     },[]);
 
     return(
